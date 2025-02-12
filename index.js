@@ -1,12 +1,12 @@
-var menu = [
-    { name: "Margherita", price: 8 },
-    { name: "Pepperoni", price: 10 },
-    { name: "Hawaian", price: 10 },
-    { name: "Veggei", price: 9 },
-];
+var nextOrderId = 1;
 var cashInRegister = 100;
 var orderQueue = [];
-var nextOrderId = 1;
+var menu = [
+    { id: nextOrderId, name: "Margherita", price: 8 },
+    { id: nextOrderId++, name: "Pepperoni", price: 10 },
+    { id: nextOrderId++, name: "Hawaian", price: 10 },
+    { id: nextOrderId++, name: "Veggei", price: 9 },
+];
 function addNewPizza(pizzaObj) {
     menu.push(pizzaObj);
 }
@@ -14,7 +14,7 @@ function addNewPizza(pizzaObj) {
 function placeOrder(pizzaName) {
     var currOrderedItem = menu.find(function (pizzaObj) { return pizzaObj.name === pizzaName; });
     if (!currOrderedItem) {
-        console.log("".concat(pizzaName, " does not exist in the menu"));
+        console.error("".concat(pizzaName, " does not exist in the menu"));
         return;
     }
     cashInRegister += currOrderedItem.price;
@@ -29,17 +29,28 @@ function placeOrder(pizzaName) {
 function completeOrder(orderId) {
     var order = orderQueue.find(function (order) { return order.id === orderId; });
     if (!order) {
-        console.log("Order with ID ".concat(orderId, " not found."));
+        console.error("Order with ID ".concat(orderId, " not found."));
         return undefined;
     }
     order.status = "completed";
     return order;
 }
-addNewPizza({ name: "Chicken Bacon Ranch", cost: 12 });
-addNewPizza({ name: "BBQ Chicken", cost: 12 });
-addNewPizza({ name: "Spicy Sausage", cost: 11 });
+function getPizzaDetail(identifier) {
+    if (identifier === "string") {
+        return menu.find(function (pizza) { return pizza.name.toLocaleLowerCase() === identifier.toLocaleLowerCase(); });
+    }
+    else if (typeof identifier === "number") {
+        return menu.find(function (pizza) { return pizza.id === identifier; });
+    }
+    else {
+        throw new TypeError("Parameter `identifier` must be a string or a number ");
+    }
+}
+addNewPizza({ id: nextOrderId++, name: "Chicken Bacon Ranch", price: 12 });
+addNewPizza({ id: nextOrderId++, name: "BBQ Chicken", price: 12 });
+addNewPizza({ id: nextOrderId++, name: "Spicy Sausage", price: 11 });
 placeOrder("Chicken Bacon Ranch");
 completeOrder(1);
 console.log("Menu:", menu);
-console.log("Cash in register:", cashInRegister);
-console.log("Order queue:", orderQueue);
+// console.log("Cash in register:", cashInRegister);
+// console.log("Order queue:", orderQueue);
